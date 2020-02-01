@@ -89,7 +89,42 @@ public class SellerDAOJdbc implements SellerDAO {
 
 	@Override
 	public List<Seller> findAll() {
-		return null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			conn.setAutoCommit(false);
+			st = conn.prepareStatement("SELECT seller.*,department.Name as DepName  "
+					+ "FROM seller INNER JOIN department  ON seller.DepartmentId = "
+					+ "department.Id  ORDER BY Name ");
+			
+
+			rs = st.executeQuery();
+			List<Seller> list = new ArrayList<>();
+			Map<Integer, Department> map = new HashMap<>();
+			while (rs.next()) {
+				Department dep = map.get(rs.getInt("DepartmentId"));
+				if (dep == null ) {
+					dep=instantiateDepartament(rs);
+					map.put(rs.getInt("DepartmentId"), dep);
+				}
+				Seller obj = instantiateSeller(rs, dep);
+				list.add(obj);
+			}
+			
+			conn.commit();
+			return list;
+			
+		} catch (SQLException e) {
+			try {
+				conn.rollback();
+				throw new DbException("Transaction rolled back! Caused by: " + e.getMessage());
+			} catch (SQLException e1) {
+				throw new DbException("Erro ao realizar rollback: " + e1.getMessage());
+			}
+		} finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
 	}
 
 	@Override
