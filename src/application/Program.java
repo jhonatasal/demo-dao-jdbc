@@ -19,7 +19,7 @@ public class Program {
 		
 		System.out.println();
 		
-		System.out.println(":::::Test 1: seller findByDepartment :::::");
+		System.out.println(":::::Test 2: seller findByDepartment :::::");
 		Department dep = new Department(2, null);
 		List<Seller> list = sellerDAO.findByDepartment(dep);
 		for(Seller sel : list) {
@@ -38,6 +38,13 @@ public class Program {
 		Seller newSeller = new Seller(null, "Greg","greg@gmail.com",new Date(),4000.0, dep);
 		sellerDAO.insert(newSeller);
 		System.out.println("Inserted! New id =" + newSeller.getId());
+		
+		System.out.println(":::::Test 5: seller update :::::");
+		seller = sellerDAO.findById(1);
+		seller.setName("Martha Waine");
+		sellerDAO.update(seller);
+		System.out.println("Update completed");
+		
 	}
 
 }
